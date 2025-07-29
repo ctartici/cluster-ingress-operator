@@ -31,6 +31,23 @@ import (
 
 const (
 	controllerName = "gatewayclass_controller"
+
+	// subscriptionCatalogOverrideAnnotationKey is the key for an
+	// unsupported annotation on the gatewayclass using which a custom
+	// catalog of OSSM can be specified.
+	subscriptionCatalogOverrideAnnotationKey = "unsupported.do-not-use.openshift.io/ossm-catalog"
+	// subscriptionChannelOverrideAnnotationKey is the key for an
+	// unsupported annotation on the gatewayclass using which a custom
+	// channel of OSSM can be specified.
+	subscriptionChannelOverrideAnnotationKey = "unsupported.do-not-use.openshift.io/ossm-channel"
+	// subscriptionVersionOverrideAnnotationKey is the key for an
+	// unsupported annotation on the gatewayclass using which a custom
+	// version of OSSM can be specified.
+	subscriptionVersionOverrideAnnotationKey = "unsupported.do-not-use.openshift.io/ossm-version"
+	// istioVersionOverrideAnnotationKey is the key for an unsupported
+	// annotation on the gatewayclass using which a custom version of Istio
+	// can be specified.
+	istioVersionOverrideAnnotationKey = "unsupported.do-not-use.openshift.io/istio-version"
 )
 
 var log = logf.Logger.WithName(controllerName)
@@ -178,13 +195,33 @@ func (r *reconciler) Reconcile(ctx context.Context, request reconcile.Request) (
 	}
 
 	var errs []error
-	if _, _, err := r.ensureServiceMeshOperatorSubscription(ctx); err != nil {
+	ossmCatalog := r.config.GatewayAPIOperatorCatalog
+	if v, ok := gatewayclass.Annotations[subscriptionCatalogOverrideAnnotationKey]; ok {
+		ossmCatalog = v
+	}
+	ossmChannel := r.config.GatewayAPIOperatorChannel
+	if v, ok := gatewayclass.Annotations[subscriptionChannelOverrideAnnotationKey]; ok {
+		ossmChannel = v
+	}
+	ossmVersion := r.config.GatewayAPIOperatorVersion
+	if v, ok := gatewayclass.Annotations[subscriptionVersionOverrideAnnotationKey]; ok {
+		ossmVersion = v
+	}
+	if _, _, err := r.ensureServiceMeshOperatorSubscription(ctx, ossmCatalog, ossmChannel, ossmVersion); err != nil {
 		errs = append(errs, fmt.Errorf("failed to ensure ServiceMeshOperatorSubscription: %w", err))
 	}
 	if _, _, err := r.ensureServiceMeshOperatorInstallPlan(ctx); err != nil {
 		errs = append(errs, err)
 	}
+<<<<<<< HEAD
 	if _, _, err := r.ensureIstio(ctx, &gatewayclass); err != nil {
+=======
+	istioVersion := r.config.IstioVersion
+	if v, ok := gatewayclass.Annotations[istioVersionOverrideAnnotationKey]; ok {
+		istioVersion = v
+	}
+	if _, _, err := r.ensureIstio(ctx, &gatewayclass, istioVersion); err != nil {
+>>>>>>> 54e4262b (Add OSSM and Istio version override annotations)
 		errs = append(errs, err)
 	} else {
 		// The OSSM operator installs the istios.sailoperator.io CRD.

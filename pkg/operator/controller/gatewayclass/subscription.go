@@ -34,14 +34,18 @@ const (
 // ensureServiceMeshOperatorSubscription attempts to ensure that a subscription
 // for servicemeshoperator is present and returns a Boolean indicating whether
 // it exists, the subscription if it exists, and an error value.
-func (r *reconciler) ensureServiceMeshOperatorSubscription(ctx context.Context) (bool, *operatorsv1alpha1.Subscription, error) {
+func (r *reconciler) ensureServiceMeshOperatorSubscription(ctx context.Context, catalog, channel, version string) (bool, *operatorsv1alpha1.Subscription, error) {
 	name := operatorcontroller.ServiceMeshOperatorSubscriptionName()
 	have, current, err := r.currentSubscription(ctx, name)
 	if err != nil {
 		return false, nil, err
 	}
 
+<<<<<<< HEAD
 	desired, err := desiredSubscription(name, r.config.GatewayAPIOperatorChannel, r.config.GatewayAPIOperatorVersion)
+=======
+	desired, err := desiredSubscription(name, catalog, channel, version)
+>>>>>>> 54e4262b (Add OSSM and Istio version override annotations)
 	if err != nil {
 		return have, current, err
 	}
