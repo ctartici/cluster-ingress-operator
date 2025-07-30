@@ -33,6 +33,7 @@ const (
 	// defaultTrustedCABundle is the fully qualified path of the trusted CA bundle
 	// that is mounted from configmap openshift-ingress-operator/trusted-ca.
 	defaultTrustedCABundle           = "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+	defaultGatewayAPIOperatorCatalog = "redhat-operators"
 	defaultGatewayAPIOperatorChannel = "stable"
 	defaultGatewayAPIOperatorVersion = "servicemeshoperator3.v3.0.0"
 )
@@ -53,6 +54,8 @@ type StartOptions struct {
 	CanaryImage string
 	// ReleaseVersion is the cluster version which the operator will converge to.
 	ReleaseVersion string
+	// GatewayAPIOperatorCatalog is the catalog source to use to install the Gateway API implementation.
+	GatewayAPIOperatorCatalog string
 	// GatewayAPIOperatorChannel is the release channel of the Gateway API implementation to install.
 	GatewayAPIOperatorChannel string
 	// GatewayAPIOperatorVersion is the name and release of the Gateway API implementation to install.
@@ -80,6 +83,7 @@ func NewStartCommand() *cobra.Command {
 	cmd.Flags().StringVarP(&options.ReleaseVersion, "release-version", "", statuscontroller.UnknownVersionValue, "the release version the operator should converge to (required)")
 	cmd.Flags().StringVarP(&options.MetricsListenAddr, "metrics-listen-addr", "", "127.0.0.1:60000", "metrics endpoint listen address (required)")
 	cmd.Flags().StringVarP(&options.ShutdownFile, "shutdown-file", "s", defaultTrustedCABundle, "if provided, shut down the operator when this file changes")
+	cmd.Flags().StringVarP(&options.GatewayAPIOperatorCatalog, "gateway-api-operator-catalog", "", defaultGatewayAPIOperatorCatalog, "catalog source for the Gateway API implementation to install")
 	cmd.Flags().StringVarP(&options.GatewayAPIOperatorChannel, "gateway-api-operator-channel", "", defaultGatewayAPIOperatorChannel, "release channel of the Gateway API implementation to install")
 	cmd.Flags().StringVarP(&options.GatewayAPIOperatorVersion, "gateway-api-operator-version", "", defaultGatewayAPIOperatorVersion, "name and release of the Gateway API implementation to install")
 
@@ -130,6 +134,7 @@ func start(opts *StartOptions) error {
 		Namespace:                 opts.OperatorNamespace,
 		IngressControllerImage:    opts.IngressControllerImage,
 		CanaryImage:               opts.CanaryImage,
+		GatewayAPIOperatorCatalog: opts.GatewayAPIOperatorCatalog,
 		GatewayAPIOperatorChannel: opts.GatewayAPIOperatorChannel,
 		GatewayAPIOperatorVersion: opts.GatewayAPIOperatorVersion,
 	}

@@ -121,6 +121,8 @@ type Config struct {
 	OperatorNamespace string
 	// OperandNamespace is the namespace in which Istio should be deployed.
 	OperandNamespace string
+	// GatewayAPIOperatorCatalog is the catalog source to use to install the Gateway API implementation.
+	GatewayAPIOperatorCatalog string
 	// GatewayAPIOperatorChannel is the release channel of the Gateway API implementation to install.
 	GatewayAPIOperatorChannel string
 	// GatewayAPIOperatorVersion is the name and release of the Gateway API implementation to install.
@@ -213,15 +215,11 @@ func (r *reconciler) Reconcile(ctx context.Context, request reconcile.Request) (
 	if _, _, err := r.ensureServiceMeshOperatorInstallPlan(ctx); err != nil {
 		errs = append(errs, err)
 	}
-<<<<<<< HEAD
-	if _, _, err := r.ensureIstio(ctx, &gatewayclass); err != nil {
-=======
 	istioVersion := r.config.IstioVersion
 	if v, ok := gatewayclass.Annotations[istioVersionOverrideAnnotationKey]; ok {
 		istioVersion = v
 	}
 	if _, _, err := r.ensureIstio(ctx, &gatewayclass, istioVersion); err != nil {
->>>>>>> 54e4262b (Add OSSM and Istio version override annotations)
 		errs = append(errs, err)
 	} else {
 		// The OSSM operator installs the istios.sailoperator.io CRD.
