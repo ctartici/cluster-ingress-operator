@@ -316,6 +316,7 @@ func New(config operatorconfig.Config, kubeConfig *rest.Config) (*Operator, erro
 		GatewayAPIOperatorCatalog: config.GatewayAPIOperatorCatalog,
 		GatewayAPIOperatorChannel: config.GatewayAPIOperatorChannel,
 		GatewayAPIOperatorVersion: config.GatewayAPIOperatorVersion,
+		IstioVersion:              config.IstioVersion,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gatewayclass controller: %w", err)

@@ -127,6 +127,8 @@ type Config struct {
 	GatewayAPIOperatorChannel string
 	// GatewayAPIOperatorVersion is the name and release of the Gateway API implementation to install.
 	GatewayAPIOperatorVersion string
+	// IstioVersion is the version of Istio to configure on the Istio CR.
+	IstioVersion string
 }
 
 // reconciler reconciles gatewayclasses.
@@ -215,11 +217,15 @@ func (r *reconciler) Reconcile(ctx context.Context, request reconcile.Request) (
 	if _, _, err := r.ensureServiceMeshOperatorInstallPlan(ctx); err != nil {
 		errs = append(errs, err)
 	}
+<<<<<<< HEAD
 	istioVersion := r.config.IstioVersion
 	if v, ok := gatewayclass.Annotations[istioVersionOverrideAnnotationKey]; ok {
 		istioVersion = v
 	}
 	if _, _, err := r.ensureIstio(ctx, &gatewayclass, istioVersion); err != nil {
+=======
+	if _, _, err := r.ensureIstio(ctx, &gatewayclass, r.config.IstioVersion); err != nil {
+>>>>>>> dd3d0f42 (Add --istio-version flag and ISTIO_VERSION env var)
 		errs = append(errs, err)
 	} else {
 		// The OSSM operator installs the istios.sailoperator.io CRD.

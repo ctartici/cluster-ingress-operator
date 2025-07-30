@@ -25,7 +25,7 @@ const systemClusterCriticalPriorityClassName = "system-cluster-critical"
 // ensureIstio attempts to ensure that an Istio CR is present and returns a
 // Boolean indicating whether it exists, the CR if it exists, and an error
 // value.
-func (r *reconciler) ensureIstio(ctx context.Context, gatewayclass *gatewayapiv1.GatewayClass) (bool, *sailv1.Istio, error) {
+func (r *reconciler) ensureIstio(ctx context.Context, gatewayclass *gatewayapiv1.GatewayClass, istioVersion string) (bool, *sailv1.Istio, error) {
 	name := controller.IstioName(r.config.OperandNamespace)
 	have, current, err := r.currentIstio(ctx, name)
 	if err != nil {
@@ -38,7 +38,7 @@ func (r *reconciler) ensureIstio(ctx context.Context, gatewayclass *gatewayapiv1
 		Name:       gatewayclass.Name,
 		UID:        gatewayclass.UID,
 	}
-	desired := desiredIstio(name, ownerRef)
+	desired := desiredIstio(name, ownerRef, istioVersion)
 
 	switch {
 	case !have:
@@ -57,7 +57,7 @@ func (r *reconciler) ensureIstio(ctx context.Context, gatewayclass *gatewayapiv1
 }
 
 // desiredIstio returns the desired Istio CR.
-func desiredIstio(name types.NamespacedName, ownerRef metav1.OwnerReference) *sailv1.Istio {
+func desiredIstio(name types.NamespacedName, ownerRef metav1.OwnerReference, istioVersion string) *sailv1.Istio {
 	pilotContainerEnv := map[string]string{
 		// Enable Gateway API.
 		"PILOT_ENABLE_GATEWAY_API": "true",
@@ -151,7 +151,11 @@ func desiredIstio(name types.NamespacedName, ownerRef metav1.OwnerReference) *sa
 					IngressControllerMode: sailv1.MeshConfigIngressControllerModeOff,
 				},
 			},
+<<<<<<< HEAD
 			Version: "v1.24.3",
+=======
+			Version: istioVersion,
+>>>>>>> dd3d0f42 (Add --istio-version flag and ISTIO_VERSION env var)
 		},
 	}
 }
